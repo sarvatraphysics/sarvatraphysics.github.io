@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sarvatra Physics — Simulations</title>
+<link rel="icon" href="logo.png"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="topline"></div>
+<header class="header"><div class="container nav">
+<a class="brand" href="#top"><img src="logo.png"><span>Sarvatra <b>Physics</b></span></a>
+<div class="nav-actions"><button id="lang">ગુજરાતી</button><button id="menu">☰</button></div>
+</div></header>
+<main id="top">
+<section class="hero">
+<div class="stars"></div><div class="hero-orbit orbit-a"></div><div class="hero-orbit orbit-b"></div>
+<div class="hero-glow"></div>
+<div class="hero-logo"><img src="logo.png"></div>
+<div class="hero-copy"><span class="eyebrow">PHYSICS • VISUAL • SIMULATIONS</span><h1>See Physics.<br><em>Understand it.</em></h1><p>Interactive, topic-wise Physics simulations for Class 11 and Class 12.</p></div>
+</section>
+<section id="classes" class="library container">
+<div class="section-head"><span>SIMULATION LIBRARY</span><h2>Choose your standard.</h2><p>Two standards. Fourteen chapters each. Topic-wise simulations.</p></div>
+<div class="class-grid">
+<article class="class-card class11"><div class="card-number">01</div><div><small>STANDARD 11</small><h3>Class 11 Physics</h3><p>Mechanics, properties of matter, thermal physics and waves.</p></div><button class="open-class">View 14 Chapters <b>＋</b></button></article>
+<article class="class-card class12"><div class="card-number">02</div><div><small>STANDARD 12</small><h3>Class 12 Physics</h3><p>Electricity, magnetism, optics, atoms, nuclei and electronics.</p></div><button class="open-class">View 14 Chapters <b>＋</b></button></article>
+</div>
+<div class="chapter-panel" id="panel11"><div class="panel-head"><div><small>STANDARD 11</small><h2>Class 11 Physics</h2></div><button class="close-panel">×</button></div><div class="chapters" id="chapters11"></div></div>
+<div class="chapter-panel" id="panel12"><div class="panel-head"><div><small>STANDARD 12</small><h2>Class 12 Physics</h2></div><button class="close-panel">×</button></div><div class="chapters" id="chapters12"></div></div>
+</section>
+</main>
+<footer><div class="container"><img src="logo.png"><span>Sarvatra Physics</span><small>Interactive Physics Simulation Library</small></div></footer>
+<script>
+const rutherford='https://javalab.org/en/rutherford_scattering_en/';
+const c11=[
+['01','Units & Measurements',['Units, dimensions & errors','Significant figures','Dimensional analysis']],
+['02','Motion in a Straight Line',['Position & displacement','Velocity & acceleration','Motion graphs','Free fall']],
+['03','Motion in a Plane',['Vectors','Projectile motion','Uniform circular motion']],
+['04','Laws of Motion',['Newton’s laws','Friction','Tension & connected bodies','Circular dynamics']],
+['05','Work, Energy & Power',['Work done by force','Kinetic & potential energy','Work-energy theorem','Power']],
+['06','System of Particles & Rotational Motion',['Centre of mass','Torque','Moment of inertia','Rolling motion']],
+['07','Gravitation',['Gravitational field','Satellites','Orbital velocity','Escape velocity']],
+['08','Mechanical Properties of Solids',['Stress & strain','Elasticity','Young’s modulus']],
+['09','Mechanical Properties of Fluids',['Pressure','Continuity equation','Bernoulli’s theorem','Viscosity']],
+['10','Thermal Properties of Matter',['Thermal expansion','Calorimetry','Heat transfer','Thermal conductivity']],
+['11','Thermodynamics',['Zeroth law','First law','Thermodynamic processes','Heat engines']],
+['12','Kinetic Theory',['Ideal gas','Pressure & temperature','Degrees of freedom','Mean free path']],
+['13','Oscillations',['SHM','Energy in SHM','Spring-mass system','Simple pendulum']],
+['14','Waves',['Wave motion','Superposition','Standing waves','Beats']]
+];
+const c12=[
+['01','Electric Charges & Fields',['Coulomb’s law','Electric field','Electric flux','Gauss’s law']],
+['02','Electrostatic Potential & Capacitance',['Potential','Potential energy','Capacitors','Dielectrics']],
+['03','Current Electricity',['Drift velocity','Ohm’s law','Kirchhoff’s laws','Wheatstone bridge']],
+['04','Moving Charges & Magnetism',['Lorentz force','Biot–Savart law','Ampere’s law','Charged particle motion']],
+['05','Magnetism & Matter',['Magnetic dipole','Earth’s magnetism','Magnetic materials']],
+['06','Electromagnetic Induction',['Faraday’s law','Lenz’s law','Motional emf','Inductance']],
+['07','Alternating Current',['AC voltage/current','LCR circuit','Resonance','Transformer']],
+['08','Electromagnetic Waves',['Displacement current','EM spectrum','Properties of EM waves']],
+['09','Ray Optics & Optical Instruments',['Reflection','Refraction','Lenses','Optical instruments']],
+['10','Wave Optics',['Huygens principle','Interference','Young’s double slit','Diffraction']],
+['11','Dual Nature of Radiation & Matter',['Photoelectric effect','de Broglie wavelength','Matter waves']],
+['12','Atoms',[['Rutherford scattering',rutherford],['Bohr model',''],['Hydrogen spectrum','']]],
+['13','Nuclei',['Nuclear size','Radioactivity','Binding energy','Nuclear reactions']],
+['14','Semiconductor Electronics',['PN junction','Diode','Rectifier','Transistor','Logic gates']]
+];
+function chapterHTML(ch){const [n,title,topics]=ch; let rows='';
+if(Array.isArray(topics[0])) topics.forEach(([t,u])=>rows+=topic(t,u)); else topics.forEach(t=>rows+=topic(t,''));
+return `<details class="chapter"><summary><span>${n}</span><strong>${title}</strong><i>⌄</i></summary><div class="topic-list">${rows}</div></details>`}
+function topic(name,url){return url?`<a class="topic live" href="${url}" target="_blank" rel="noopener"><span>${name}</span><b>Open simulation ↗</b></a>`:`<div class="topic"><span>${name}</span><b class="empty">+ Add simulation</b></div>`}
+document.getElementById('chapters11').innerHTML=c11.map(chapterHTML).join('');document.getElementById('chapters12').innerHTML=c12.map(chapterHTML).join('');
+const p11=document.getElementById('panel11'),p12=document.getElementById('panel12');document.querySelectorAll('.class-card')[0].querySelector('button').onclick=()=>{p11.classList.add('show');p12.classList.remove('show');p11.scrollIntoView({behavior:'smooth',block:'start'})};document.querySelectorAll('.class-card')[1].querySelector('button').onclick=()=>{p12.classList.add('show');p11.classList.remove('show');p12.scrollIntoView({behavior:'smooth',block:'start'})};document.querySelectorAll('.close-panel').forEach(b=>b.onclick=()=>b.closest('.chapter-panel').classList.remove('show'));
+document.getElementById('lang').onclick=()=>{document.documentElement.classList.toggle('gu');document.getElementById('lang').textContent=document.documentElement.classList.contains('gu')?'English':'ગુજરાતી'};
+</script>
+</body></html>
