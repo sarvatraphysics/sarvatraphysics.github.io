@@ -25,14 +25,14 @@
 <section id="classes" class="library container">
 <div class="section-head"><span>SIMULATION LIBRARY</span><h2>Choose your standard.</h2><p>Two standards. Fourteen chapters each. Topic-wise simulations.</p></div>
 <div class="class-grid">
-<article class="class-card class11"><div class="card-number">01</div><div><small>STANDARD 11</small><h3>Class 11 Physics</h3><p>Mechanics, properties of matter, thermal physics and waves.</p></div><button class="open-class">View 14 Chapters <b>＋</b></button></article>
-<article class="class-card class12"><div class="card-number">02</div><div><small>STANDARD 12</small><h3>Class 12 Physics</h3><p>Electricity, magnetism, optics, atoms, nuclei and electronics.</p></div><button class="open-class">View 14 Chapters <b>＋</b></button></article>
+<article class="class-card class11" tabindex="0" role="button" aria-label="Open Class 11 Physics chapters"><div class="card-number">01</div><div><small>STANDARD 11</small><h3>Class 11 Physics</h3><p>Mechanics, properties of matter, thermal physics and waves.</p></div><button class="open-class" type="button">View 14 Chapters <b>＋</b></button></article>
+<article class="class-card class12" tabindex="0" role="button" aria-label="Open Class 12 Physics chapters"><div class="card-number">02</div><div><small>STANDARD 12</small><h3>Class 12 Physics</h3><p>Electricity, magnetism, optics, atoms, nuclei and electronics.</p></div><button class="open-class" type="button">View 14 Chapters <b>＋</b></button></article>
 </div>
 <div class="chapter-panel" id="panel11"><div class="panel-head"><div><small>STANDARD 11</small><h2>Class 11 Physics</h2></div><button class="close-panel">×</button></div><div class="chapters" id="chapters11"></div></div>
 <div class="chapter-panel" id="panel12"><div class="panel-head"><div><small>STANDARD 12</small><h2>Class 12 Physics</h2></div><button class="close-panel">×</button></div><div class="chapters" id="chapters12"></div></div>
 </section>
 </main>
-<footer><div class="container"><img src="logo.png"><span>Sarvatra Physics</span><small>Made with ❤️ by Maulik Patel</small></div></footer>
+<footer><div class="container"><img src="logo.png"><span>Sarvatra Physics</span><small>Interactive Physics Simulation Library</small></div></footer>
 <script>
 const rutherford='https://javalab.org/en/rutherford_scattering_en/';
 const c11=[
@@ -132,8 +132,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   const p11=document.getElementById('panel11');
   const p12=document.getElementById('panel12');
   const cards=document.querySelectorAll('.class-card');
-  cards[0].querySelector('button').onclick=()=>{p11.classList.add('show');p12.classList.remove('show');p11.scrollIntoView({behavior:'smooth',block:'start'})};
-  cards[1].querySelector('button').onclick=()=>{p12.classList.add('show');p11.classList.remove('show');p12.scrollIntoView({behavior:'smooth',block:'start'})};
+  const openPanel=(panel,other)=>{
+    panel.classList.add('show');
+    other.classList.remove('show');
+    setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),20);
+  };
+  cards[0].addEventListener('click',()=>openPanel(p11,p12));
+  cards[1].addEventListener('click',()=>openPanel(p12,p11));
+  cards[0].addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPanel(p11,p12)}});
+  cards[1].addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPanel(p12,p11)}});
   document.querySelectorAll('.close-panel').forEach(b=>b.onclick=()=>b.closest('.chapter-panel').classList.remove('show'));
   document.getElementById('lang').onclick=()=>{document.documentElement.classList.toggle('gu');document.getElementById('lang').textContent=document.documentElement.classList.contains('gu')?'English':'ગુજરાતી'};
   document.getElementById('closeMedia').onclick=closeMedia;
