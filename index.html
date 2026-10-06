@@ -4,6 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sarvatra Physics — Simulation Library</title>
 <link rel="icon" href="logo.png"><link rel="stylesheet" href="style.css">
+<style>
+/* Simulation modal frame */
+.sim-frame {
+  width: 100%;
+  height: 520px;
+  border: none;
+  border-radius: 8px;
+  background: #020617;
+}
+</style>
 </head>
 <body>
 <div class="topline"></div>
@@ -35,6 +45,8 @@
 <footer><div class="container"><img src="logo.png"><span>Sarvatra Physics</span><small>Created by Maulik Patel for the Love of Physics</small></div></footer>
 <script>
 const rutherford='https://javalab.org/en/rutherford_scattering_en/';
+const spectrumSim='spectrum.html';
+
 const c11=[
 ['01','Units & Measurements',['Units, dimensions & errors','Significant figures','Dimensional analysis']],
 ['02','Motion in a Straight Line',['Position & displacement','Velocity & acceleration','Motion graphs','Free fall']],
@@ -63,13 +75,12 @@ const c12=[
 ['09','Ray Optics & Optical Instruments',['Reflection','Refraction','Lenses','Optical instruments']],
 ['10','Wave Optics',['Huygens principle','Interference','Young’s double slit','Diffraction']],
 ['11','Dual Nature of Radiation & Matter',['Photoelectric effect','de Broglie wavelength','Matter waves']],
-['12','Atoms',[['Rutherford scattering',rutherford],['Bohr model',''],['Hydrogen spectrum','']]],
+['12','Atoms',[['Rutherford scattering',rutherford],['Bohr model',''],['Hydrogen spectrum (Emission & Absorption)',spectrumSim]]],
 ['13','Nuclei',['Nuclear size','Radioactivity','Binding energy','Nuclear reactions']],
 ['14','Semiconductor Electronics',['PN junction','Diode','Rectifier','Transistor','Logic gates']]
 ];
 
 // Topic animations are configured in media.json.
-// Supported formats: GIF, WebM and MP4.
 let mediaMap = {};
 
 function topicKey(name) {
@@ -88,8 +99,25 @@ function topic(name,url,standard,chapterNo,chapterTitle) {
   const key = `${standard}/${String(chapterNo).padStart(2,'0')}/${topicKey(name)}`;
   const media = mediaMap[key];
   const mediaButton = media ? `<button class="topic-media" data-media="${media}" data-title="${name}">▶ Preview</button>` : `<span class="empty">Animation coming soon</span>`;
-  const sim = url ? `<a class="topic-sim" href="${url}" target="_blank" rel="noopener">Open simulation ↗</a>` : '';
+  
+  let sim = '';
+  if (url) {
+    if (url.endsWith('.html')) {
+      sim = `<button class="topic-sim" onclick="openSim('${url}', '${name}')" style="cursor:pointer; background:none; border:none; color:inherit; font:inherit; text-decoration:underline;">Open simulation ↗</button>`;
+    } else {
+      sim = `<a class="topic-sim" href="${url}" target="_blank" rel="noopener">Open simulation ↗</a>`;
+    }
+  }
+
   return `<div class="topic"><div class="topic-name"><span>${name}</span><small>${chapterTitle}</small></div><div class="topic-actions">${mediaButton}${sim}</div></div>`;
+}
+
+function openSim(url, title) {
+  const overlay=document.getElementById('mediaModal');
+  const stage=document.getElementById('mediaStage');
+  document.getElementById('mediaTitle').textContent=title;
+  stage.innerHTML=`<iframe src="${url}" class="sim-frame" title="${title}"></iframe>`;
+  overlay.classList.add('show');
 }
 
 async function loadMedia() {
