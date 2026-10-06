@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ઉત્સર્જન અને શોષણ વર્ણપટ સિમ્યુલેશન</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 15px;
+            background: #0b1120;
+            color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            text-align: center;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 9px 18px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        select {
+            padding: 9px 14px;
+            background: #1e293b;
+            color: white;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            outline: none;
+        }
+        canvas {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <button id="toggleGasBtn" onclick="toggleGas()">વાયુ પાત્ર ઉમેરો</button>
+        <select id="gasSelect" onchange="changeGas()" disabled>
+            <option value="hydrogen">હાઇડ્રોજન વાયુ (H)</option>
+            <option value="sodium">સોડિયમ વાષ્પ (Na)</option>
+        </select>
+    </div>
+
+    <canvas id="simCanvas" width="800" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        let hasGas = false;
+        let gasType = 'hydrogen';
+
+        const gasLines = {
+            hydrogen: [
+                { pos: 0.12, name: '410nm' },
+                { pos: 0.22, name: '434nm' },
+                { pos: 0.42, name: '486nm' },
+                { pos: 0.86, name: '656nm' }
+            ],
+            sodium: [
+                { pos: 0.62, name: '589nm' }
+            ]
+        };
+
+        function toggleGas() {
+            hasGas = !hasGas;
+            const btn = document.getElementById('toggleGasBtn');
+            const select = document.getElementById('gasSelect');
+            if (hasGas) {
+                btn.innerText = "વાયુ પાત્ર હટાવો";
+                btn.style.background = "#22c55e";
+                select.disabled = false;
+            } else {
+                btn.innerText = "વાયુ પાત્ર ઉમેરો";
+                btn.style.background = "#ef4444";
+                select.disabled = true;
+            }
+            draw();
+        }
+
+        function changeGas() {
+            gasType = document.getElementById('gasSelect').value;
+            draw();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // ૧. પ્રકાશ સોર્સ
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(60, 200, 18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '12px sans-serif';
+            ctx.fillText("સફેદ પ્રકાશ સ્ત્રોત", 15, 235);
+
+            // ૨. વાયુ પાત્ર (Gas Chamber)
+            if (hasGas) {
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 2;
+                ctx.fillRect(160, 140, 75, 120);
+                ctx.strokeRect(160, 140, 75, 120);
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText(gasType === 'hydrogen' ? "H₂ વાયુ" : "Na વાષ્પ", 175, 205);
+            }
+
+            // ૩. પ્રિઝમ
+            ctx.beginPath();
+            ctx.moveTo(380, 100);
+            ctx.lineTo(440, 290);
+            ctx.lineTo(320, 290);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.fill();
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '13px sans-serif';
+            ctx.fillText("પ્રિઝમ", 365, 315);
+
+            // ૪. પ્રકાશ કિરણ
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(78, 200);
+            ctx.lineTo(350, 200);
+            ctx.stroke();
+
+            // ૫. વર્ણપટ પડદો
+            const screenX = 660;
+            const screenY = 90;
+            const screenH = 220;
+            const screenW = 35;
+
+            let grad = ctx.createLinearGradient(0, screenY, 0, screenY + screenH);
+            grad.addColorStop(0.0, '#7e22ce'); // Violet
+            grad.addColorStop(0.2, '#2563eb'); // Blue
+            grad.addColorStop(0.4, '#06b6d4'); // Cyan
+            grad.addColorStop(0.5, '#22c55e'); // Green
+            grad.addColorStop(0.7, '#eab308'); // Yellow
+            grad.addColorStop(0.85, '#f97316'); // Orange
+            grad.addColorStop(1.0, '#ef4444'); // Red
+
+            ctx.fillStyle = grad;
+            ctx.fillRect(screenX, screenY, screenW, screenH);
+
+            // શોષણ રેખાઓ
+            if (hasGas) {
+                ctx.fillStyle = '#020617';
+                gasLines[gasType].forEach(line => {
+                    let y = screenY + (line.pos * screenH);
+                    ctx.fillRect(screenX, y, screenW, 4);
+                    ctx.fillStyle = '#f87171';
+                    ctx.font = '11px monospace';
+                    ctx.fillText(line.name, screenX + 42, y + 4);
+                    ctx.fillStyle = '#020617';
+                });
+            }
+
+            // વિભાજન કિરણો
+            const colors = ['#7e22ce', '#2563eb', '#22c55e', '#eab308', '#ef4444'];
+            colors.forEach((col, idx) => {
+                ctx.strokeStyle = col;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(395, 200);
+                ctx.lineTo(screenX, screenY + (idx * (screenH / 4)));
+                ctx.stroke();
+            });
+
+            // સ્ટેટસ લખાણ
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.fillText(hasGas ? "શોષણ વર્ણપટ (કાળી રેખાઓ દેખાય છે)" : "સતત ઉત્સર્જન વર્ણપટ (સાત રંગો)", screenX - 80, screenY + screenH + 35);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
