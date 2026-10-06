@@ -4,8 +4,8 @@
     <h3 style="color: #00e5ff; margin-top: 0; margin-bottom: 15px;">પ્રકાશનું વિભાજન અને શોષણ વર્ણપટ (Absorption Spectrum)</h3>
     
     <div style="margin-bottom: 20px;">
-        <button id="btnSimOut" onclick="moveSimChamber(false)" style="background-color: #00e5ff; color: #000; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px;">સળંગ વર્ણપટ (વાયુપાત્ર વિના)</button>
-        <button id="btnSimIn" onclick="moveSimChamber(true)" style="background-color: #333; color: #fff; border: 1px solid #00e5ff; padding: 10px 20px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px;">શોષણ વર્ણપટ (હાઇડ્રોજન વાયુપાત્ર મૂકો)</button>
+        <button id="btnSimOut" onclick="moveSimChamber(false)" style="background-color: #00e5ff; color: #000; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px; transition: 0.3s;">સળંગ વર્ણપટ (વાયુપાત્ર વિના)</button>
+        <button id="btnSimIn" onclick="moveSimChamber(true)" style="background-color: #333; color: #fff; border: 1px solid #00e5ff; padding: 10px 20px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px; transition: 0.3s;">શોષણ વર્ણપટ (હાઇડ્રોજન વાયુપાત્ર મૂકો)</button>
     </div>
 
     <div style="position: relative; width: 100%; display: flex; justify-content: center;">
@@ -129,23 +129,27 @@
             sCtx.fillText("જાંબલી", 780, 415);
             
             // 6. Stark Black Absorption Lines (કાળી રેખાઓ)
-            if (Math.abs(simChamberY - 190) < 5) {
-                sCtx.fillStyle = "#000000"; // સંપૂર્ણ કાળો રંગ
+            if (simChamberY < 230) {
+                // વારંવાર fillStyle કાળો કરવો જરૂરી છે જેથી લેબલનો સફેદ રંગ મિક્સ ન થાય
                 
                 // H-alpha (રાતો)
-                sCtx.fillRect(720, 120, 50, 5);
+                sCtx.fillStyle = "#000000"; 
+                sCtx.fillRect(720, 120, 50, 6);
                 drawSimLabel("H-α (656nm)", 120);
                 
                 // H-beta (વાદળી-લીલો)
-                sCtx.fillRect(720, 270, 50, 5);
+                sCtx.fillStyle = "#000000"; 
+                sCtx.fillRect(720, 270, 50, 6);
                 drawSimLabel("H-β (486nm)", 270);
                 
                 // H-gamma (જાંબલી-વાદળી)
-                sCtx.fillRect(720, 330, 50, 5);
+                sCtx.fillStyle = "#000000"; 
+                sCtx.fillRect(720, 330, 50, 6);
                 drawSimLabel("H-γ (434nm)", 330);
                 
                 // H-delta (જાંબલી)
-                sCtx.fillRect(720, 370, 50, 5);
+                sCtx.fillStyle = "#000000"; 
+                sCtx.fillRect(720, 370, 50, 6);
                 drawSimLabel("H-δ (410nm)", 370);
             }
             
@@ -153,13 +157,13 @@
         }
         
         function drawSimLabel(text, yPos) {
-            sCtx.fillStyle = "#ffffff";
+            sCtx.fillStyle = "#ffffff"; // નામ માટે સફેદ રંગ
             sCtx.font = "12px Arial";
             sCtx.fillText(text, 775, yPos + 6);
             
             sCtx.beginPath();
-            sCtx.moveTo(720, yPos+2.5);
-            sCtx.lineTo(770, yPos+2.5);
+            sCtx.moveTo(720, yPos+3);
+            sCtx.lineTo(770, yPos+3);
             sCtx.strokeStyle = "rgba(255, 255, 255, 0.4)";
             sCtx.lineWidth = 1;
             sCtx.stroke();
