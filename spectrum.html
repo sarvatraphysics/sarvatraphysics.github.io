@@ -20,7 +20,7 @@
             justify-content: center;
             align-items: center;
             gap: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             flex-wrap: wrap;
         }
         button {
@@ -29,13 +29,12 @@
             color: white;
             border: none;
             border-radius: 6px;
-            font-weight: 600;
+            font-weight: bold;
             font-size: 14px;
             cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+            transition: all 0.2s;
         }
-        button:hover { opacity: 0.95; transform: translateY(-1px); }
+        button:hover { opacity: 0.9; transform: scale(1.02); }
         select {
             padding: 8px 14px;
             background: #1e293b;
@@ -46,10 +45,6 @@
             outline: none;
             cursor: pointer;
         }
-        select:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
         canvas {
             display: block;
             margin: 0 auto;
@@ -58,7 +53,6 @@
             border-radius: 8px;
             max-width: 100%;
             height: auto;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
         }
     </style>
 </head>
@@ -80,20 +74,46 @@
 
         let hasGas = false;
         let gasType = 'hydrogen';
-        let chamberAnim = 0; // વાયુ પાત્રના સ્લાઇડિંગ એનિમેશન માટે
-        let offset = 0;      // કિરણોના સતત પ્રવાહ (wave pulse) માટે
 
+        // હાઇડ્રોજન અને સોડિયમની શોષણ રેખાઓ
         const gasLines = {
             hydrogen: [
-                { pos: 0.12, name: '410nm', col: '#c084fc' },
-                { pos: 0.22, name: '434nm', col: '#818cf8' },
-                { pos: 0.42, name: '486nm', col: '#38bdf8' },
-                { pos: 0.86, name: '656nm', col: '#f87171' }
+                { pos: 0.12, name: '410nm', col: '#c084fc', idx: 0 },
+                { pos: 0.22, name: '434nm', col: '#818cf8', idx: 1 },
+                { pos: 0.42, name: '486nm', col: '#38bdf8', idx: 2 },
+                { pos: 0.86, name: '656nm', col: '#f87171', idx: 6 }
             ],
             sodium: [
-                { pos: 0.62, name: '589nm', col: '#fde047' }
+                { pos: 0.62, name: '589nm', col: '#fde047', idx: 4 }
             ]
         };
+
+        const colors = ['#7e22ce', '#2563eb', '#06b6d4', '#22c55e', '#eab308', '#f97316', '#ef4444'];
+
+        // એનિમેટેડ કણો (Photons)
+        let whitePhotons = [];
+        let spectralPhotons = [];
+
+        function initPhotons() {
+            whitePhotons = [];
+            for(let i = 0; i < 25; i++) {
+                whitePhotons.push({
+                    x: 65 + Math.random() * 290,
+                    y: 210 + (Math.random() - 0.5) * 6,
+                    speed: 2.2 + Math.random() * 0.8
+                });
+            }
+            spectralPhotons = [];
+            for(let i = 0; i < 45; i++) {
+                let colorIdx = Math.floor(Math.random() * colors.length);
+                spectralPhotons.push({
+                    progress: Math.random(),
+                    speed: 0.012 + Math.random() * 0.006,
+                    colorIdx: colorIdx
+                });
+            }
+        }
+        initPhotons();
 
         function toggleGas() {
             hasGas = !hasGas;
@@ -102,12 +122,10 @@
             if (hasGas) {
                 btn.innerText = "વાયુ પાત્ર હટાવો";
                 btn.style.background = "#22c55e";
-                btn.style.boxShadow = "0 2px 8px rgba(34, 197, 94, 0.4)";
                 select.disabled = false;
             } else {
                 btn.innerText = "વાયુ પાત્ર ઉમેરો";
                 btn.style.background = "#ef4444";
-                btn.style.boxShadow = "0 2px 8px rgba(239, 68, 68, 0.4)";
                 select.disabled = true;
             }
         }
@@ -116,23 +134,18 @@
             gasType = document.getElementById('gasSelect').value;
         }
 
-        function render() {
+        function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            offset = (offset + 1.2) % 30; // એનિમેશન સ્પીડ
-
-            // સ્મૂથ ચેમ્બર એનિમેશન
-            if (hasGas && chamberAnim < 1) chamberAnim = Math.min(1, chamberAnim + 0.08);
-            if (!hasGas && chamberAnim > 0) chamberAnim = Math.max(0, chamberAnim - 0.08);
 
             const srcX = 65, srcY = 210;
             const prismTipX = 390, prismBaseY = 300, prismTopY = 110;
-            const prismEntryX = 360, prismExitX = 405;
+            const prismEntryX = 358, prismExitX = 405;
             const screenX = 660, screenY = 90, screenH = 240, screenW = 34;
 
-            // ૧. સફેદ પ્રકાશ સોર્સ
+            // ૧. સફેદ પ્રકાશ સોર્સ ગ્લો
             let glow = ctx.createRadialGradient(srcX, srcY, 4, srcX, srcY, 26);
             glow.addColorStop(0, '#ffffff');
-            glow.addColorStop(0.5, 'rgba(255, 255, 255, 0.8)');
+            glow.addColorStop(0.4, 'rgba(255, 255, 255, 0.8)');
             glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
             ctx.fillStyle = glow;
             ctx.beginPath();
@@ -145,60 +158,52 @@
             ctx.fill();
 
             ctx.fillStyle = '#94a3b8';
-            ctx.font = '12px system-ui';
+            ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText("સફેદ પ્રકાશ સ્ત્રોત", srcX, srcY + 38);
+            ctx.fillText("સફેદ પ્રકાશ સ્ત્રોત", srcX, srcY + 36);
 
-            // ૨. સફેદ પ્રકાશ કિરણ (સોર્સ થી પ્રિઝમ)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.lineWidth = 4;
+            // ૨. સતત વહેતો સફેદ બીમ
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 6;
             ctx.beginPath();
             ctx.moveTo(srcX + 14, srcY);
             ctx.lineTo(prismEntryX, srcY);
             ctx.stroke();
 
-            // ગતિશીલ પલ્સ (કિરણોનું એનિમેશન)
-            ctx.save();
-            ctx.setLineDash([8, 14]);
-            ctx.lineDashOffset = -offset;
-            ctx.strokeStyle = '#38bdf8';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(srcX + 14, srcY);
-            ctx.lineTo(prismEntryX, srcY);
-            ctx.stroke();
-            ctx.restore();
+            // સફેદ ફોટોન કણોનું એનિમેશન
+            whitePhotons.forEach(p => {
+                p.x += p.speed;
+                if (p.x > prismEntryX) p.x = srcX + 14;
 
-            // ૩. વાયુ પાત્ર (Gas Chamber - સ્લાઇડિંગ ઇફેક્ટ)
-            if (chamberAnim > 0) {
-                const chamberX = 175;
-                const chamberY = 145 + (1 - chamberAnim) * 40;
-                const chamberW = 85;
-                const chamberH = 130;
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            });
 
-                ctx.save();
-                ctx.globalAlpha = chamberAnim;
-
+            // ૩. વાયુ પાત્ર (Gas Chamber)
+            if (hasGas) {
+                const chamberX = 175, chamberY = 145, chamberW = 85, chamberH = 130;
                 ctx.fillStyle = gasType === 'hydrogen' ? 'rgba(56, 189, 248, 0.16)' : 'rgba(234, 179, 8, 0.16)';
                 ctx.strokeStyle = gasType === 'hydrogen' ? '#38bdf8' : '#eab308';
                 ctx.lineWidth = 2;
                 ctx.fillRect(chamberX, chamberY, chamberW, chamberH);
                 ctx.strokeRect(chamberX, chamberY, chamberW, chamberH);
 
-                // વાયુના પરમાણુઓનું ગતિશીલ હલનચલન
-                for (let i = 0; i < 7; i++) {
-                    let px = chamberX + 12 + ((i * 24 + offset * 1.5) % (chamberW - 24));
-                    let py = chamberY + 20 + ((i * 17) % (chamberH - 40));
+                // વાયુ અણુઓનું બ્રાઉનિયન ગતિશીલ હલનચલન
+                const time = Date.now() * 0.003;
+                for (let i = 0; i < 9; i++) {
+                    let ax = chamberX + 15 + ((i * 20 + Math.sin(time + i) * 12 + 60) % (chamberW - 30));
+                    let ay = chamberY + 20 + ((i * 14 + Math.cos(time + i) * 12 + 80) % (chamberH - 35));
                     ctx.fillStyle = gasType === 'hydrogen' ? '#7dd3fc' : '#fde047';
                     ctx.beginPath();
-                    ctx.arc(px, py, 3, 0, Math.PI * 2);
+                    ctx.arc(ax, ay, 3, 0, Math.PI * 2);
                     ctx.fill();
                 }
 
                 ctx.fillStyle = gasType === 'hydrogen' ? '#38bdf8' : '#eab308';
-                ctx.font = 'bold 12px system-ui';
+                ctx.font = 'bold 12px sans-serif';
                 ctx.fillText(gasType === 'hydrogen' ? "H₂ વાયુ પાત્ર" : "Na વાષ્પ પાત્ર", chamberX + chamberW / 2, chamberY + chamberH + 18);
-                ctx.restore();
             }
 
             // ૪. પ્રિઝમ
@@ -214,89 +219,99 @@
             ctx.stroke();
 
             ctx.fillStyle = '#cbd5e1';
-            ctx.font = '13px system-ui';
+            ctx.font = '13px sans-serif';
             ctx.fillText("પ્રિઝમ", prismTipX, prismBaseY + 22);
 
-            // પ્રિઝમ અંદર પ્રકાશનું વિભાજન
+            // પ્રિઝમ અંદર વક્રીભવન
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(prismEntryX, srcY);
             ctx.lineTo(prismExitX, srcY);
             ctx.stroke();
 
-            // ૫. વર્ણપટ પડદો (સ્ક્રીન)
+            // ૫. વર્ણપટ સ્ક્રીન
             let grad = ctx.createLinearGradient(0, screenY, 0, screenY + screenH);
-            grad.addColorStop(0.0, '#7e22ce'); // જાંબલી
-            grad.addColorStop(0.18, '#2563eb'); // નીલો
-            grad.addColorStop(0.35, '#06b6d4'); // વાદળી
-            grad.addColorStop(0.52, '#22c55e'); // લીલો
-            grad.addColorStop(0.70, '#eab308'); // પીળો
-            grad.addColorStop(0.85, '#f97316'); // નારંગી
-            grad.addColorStop(1.0, '#ef4444'); // રાતો
+            grad.addColorStop(0.0, '#7e22ce');
+            grad.addColorStop(0.18, '#2563eb');
+            grad.addColorStop(0.35, '#06b6d4');
+            grad.addColorStop(0.52, '#22c55e');
+            grad.addColorStop(0.70, '#eab308');
+            grad.addColorStop(0.85, '#f97316');
+            grad.addColorStop(1.0, '#ef4444');
 
             ctx.fillStyle = grad;
             ctx.fillRect(screenX, screenY, screenW, screenH);
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = '#94a3b8';
             ctx.strokeRect(screenX, screenY, screenW, screenH);
 
-            // ૬. વિભાજિત રંગબેરંગી કિરણો (Animated Flowing Rays)
-            const rayColors = ['#7e22ce', '#2563eb', '#06b6d4', '#22c55e', '#eab308', '#f97316', '#ef4444'];
-            rayColors.forEach((color, i) => {
-                let targetY = screenY + (i * (screenH / (rayColors.length - 1)));
+            // શોષાયેલી લાઈનોની યાદી
+            const absorbedIndices = hasGas ? gasLines[gasType].map(l => l.idx) : [];
+
+            // ૬. રંગબેરંગી વિભાજિત કિરણો
+            colors.forEach((col, idx) => {
+                let targetY = screenY + (idx * (screenH / (colors.length - 1)));
+                let isAbsorbed = absorbedIndices.includes(idx);
 
                 ctx.save();
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = isAbsorbed ? 'rgba(255,255,255,0.05)' : col;
+                ctx.lineWidth = isAbsorbed ? 0.8 : 2;
                 ctx.beginPath();
                 ctx.moveTo(prismExitX, srcY);
                 ctx.lineTo(screenX, targetY);
                 ctx.stroke();
-
-                // ફોટોન / તરંગ કણોનું વહન
-                ctx.setLineDash([5, 12]);
-                ctx.lineDashOffset = -offset * 1.5;
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
                 ctx.restore();
             });
 
-            // ૭. શોષણ કાળી રેખાઓ (Absorption Lines)
-            if (chamberAnim > 0.4) {
-                ctx.save();
-                ctx.globalAlpha = Math.min(1, (chamberAnim - 0.4) * 1.6);
+            // રંગીન ફોટોન કણોનું એનિમેશન
+            spectralPhotons.forEach(sp => {
+                sp.progress += sp.speed;
+                if (sp.progress > 1) {
+                    sp.progress = 0;
+                    sp.colorIdx = Math.floor(Math.random() * colors.length);
+                }
+
+                let isAbsorbed = absorbedIndices.includes(sp.colorIdx);
+                if (!isAbsorbed) {
+                    let targetY = screenY + (sp.colorIdx * (screenH / (colors.length - 1)));
+                    let curX = prismExitX + (screenX - prismExitX) * sp.progress;
+                    let curY = srcY + (targetY - srcY) * sp.progress;
+
+                    ctx.fillStyle = colors[sp.colorIdx];
+                    ctx.beginPath();
+                    ctx.arc(curX, curY, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            // ૭. શોષણ કાળી રેખાઓ (Absorption Black Lines)
+            if (hasGas) {
                 gasLines[gasType].forEach(line => {
                     let y = screenY + (line.pos * screenH);
-                    
-                    // પડદા પર કાળી શોષણ પટ્ટી
                     ctx.fillStyle = '#020617';
-                    ctx.fillRect(screenX, y - 2, screenW, 4);
+                    ctx.fillRect(screenX, y - 2.5, screenW, 5);
 
-                    // તરંગલંબાઈ દર્શાવતું લેબલ
                     ctx.fillStyle = line.col;
                     ctx.font = 'bold 11px monospace';
                     ctx.textAlign = 'left';
-                    ctx.fillText("← " + line.name, screenX + screenW + 8, y + 4);
+                    ctx.fillText("← " + line.name, screenX + screenW + 6, y + 4);
                 });
-                ctx.restore();
             }
 
-            // સ્ટેટસ લેબલ
+            // સ્ટેટસ લખાણ
             ctx.fillStyle = '#f8fafc';
-            ctx.font = 'bold 13px system-ui';
+            ctx.font = 'bold 13px sans-serif';
             ctx.textAlign = 'center';
             if (hasGas) {
-                ctx.fillText("શોષણ વર્ણપટ (વાયુ દ્વારા શોષાયેલ તરંગલંબાઈ પર કાળી રેખાઓ)", screenX - 50, screenY + screenH + 34);
+                ctx.fillText("શોષણ વર્ણપટ (શોષાયેલ તરંગલંબાઈ પર ફોટોન શોષાય છે અને કાળી રેખાઓ દેખાય છે)", screenX - 50, screenY + screenH + 34);
             } else {
-                ctx.fillText("સતત ઉત્સર્જન વર્ણપટ (સાત રંગોનું સળંગ વર્ણપટ)", screenX - 50, screenY + screenH + 34);
+                ctx.fillText("સતત ઉત્સર્જન વર્ણપટ (સાત રંગોના ફોટોનનું સતત વહન)", screenX - 50, screenY + screenH + 34);
             }
 
-            requestAnimationFrame(render);
+            requestAnimationFrame(animate);
         }
 
-        render();
+        requestAnimationFrame(animate);
     </script>
 </body>
 </html>
