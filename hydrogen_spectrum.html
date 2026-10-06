@@ -1,0 +1,171 @@
+<!-- શોષણ વર્ણપટ સિમ્યુલેશન (અહીંથી કોપી કરો) -->
+<div id="spectrum-simulation-wrapper" style="width: 100%; max-width: 900px; margin: 20px auto; background-color: #080812; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: white; box-sizing: border-box;">
+    
+    <h3 style="color: #00e5ff; margin-top: 0; margin-bottom: 15px;">પ્રકાશનું વિભાજન અને શોષણ વર્ણપટ (Absorption Spectrum)</h3>
+    
+    <div style="margin-bottom: 20px;">
+        <button id="btnSimOut" onclick="moveSimChamber(false)" style="background-color: #00e5ff; color: #000; border: none; padding: 10px 20px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px;">સળંગ વર્ણપટ (વાયુપાત્ર વિના)</button>
+        <button id="btnSimIn" onclick="moveSimChamber(true)" style="background-color: #333; color: #fff; border: 1px solid #00e5ff; padding: 10px 20px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px;">શોષણ વર્ણપટ (હાઇડ્રોજન વાયુપાત્ર મૂકો)</button>
+    </div>
+
+    <div style="position: relative; width: 100%; display: flex; justify-content: center;">
+        <canvas id="simOpticsCanvas" width="850" height="500" style="background-color: #020205; border: 1px solid #222; border-radius: 8px; max-width: 100%; height: auto;"></canvas>
+    </div>
+
+    <script>
+        const simCanvas = document.getElementById("simOpticsCanvas");
+        const sCtx = simCanvas.getContext("2d");
+        
+        let simChamberY = 400; 
+        let simTargetChamberY = 400; 
+        let particleOffset = 0;
+        
+        function moveSimChamber(inPath) {
+            simTargetChamberY = inPath ? 190 : 400;
+            
+            if(inPath) {
+                document.getElementById("btnSimIn").style.backgroundColor = "#00e5ff";
+                document.getElementById("btnSimIn").style.color = "#000";
+                document.getElementById("btnSimOut").style.backgroundColor = "#333";
+                document.getElementById("btnSimOut").style.color = "#fff";
+                document.getElementById("btnSimOut").style.border = "1px solid #00e5ff";
+            } else {
+                document.getElementById("btnSimOut").style.backgroundColor = "#00e5ff";
+                document.getElementById("btnSimOut").style.color = "#000";
+                document.getElementById("btnSimIn").style.backgroundColor = "#333";
+                document.getElementById("btnSimIn").style.color = "#fff";
+                document.getElementById("btnSimIn").style.border = "1px solid #00e5ff";
+            }
+        }
+        
+        function renderSimulation() {
+            sCtx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+            particleOffset += 0.5;
+            
+            simChamberY += (simTargetChamberY - simChamberY) * 0.1; // Smooth slide
+            
+            // 1. Light Source (સ્ત્રોત)
+            sCtx.fillStyle = "#ffffff";
+            sCtx.shadowBlur = 15;
+            sCtx.shadowColor = "#ffffff";
+            sCtx.fillRect(20, 210, 30, 40);
+            sCtx.shadowBlur = 0;
+            
+            sCtx.font = "14px Arial";
+            sCtx.fillStyle = "#cccccc";
+            sCtx.fillText("શ્વેત પ્રકાશ", 10, 270);
+            
+            // Glowing Beam (પ્રકાશનું કિરણ)
+            sCtx.beginPath();
+            sCtx.moveTo(50, 230);
+            sCtx.lineTo(400, 230);
+            sCtx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+            sCtx.lineWidth = 5;
+            sCtx.shadowBlur = 10;
+            sCtx.shadowColor = "#00e5ff";
+            sCtx.stroke();
+            sCtx.shadowBlur = 0;
+            
+            // 2. Prism (પ્રિઝમ)
+            sCtx.beginPath();
+            sCtx.moveTo(430, 150);
+            sCtx.lineTo(380, 300);
+            sCtx.lineTo(480, 300);
+            sCtx.closePath();
+            sCtx.fillStyle = "rgba(255, 255, 255, 0.1)";
+            sCtx.fill();
+            sCtx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+            sCtx.lineWidth = 2;
+            sCtx.stroke();
+            
+            // 3. Sliding Gas Chamber (વાયુપાત્ર)
+            sCtx.fillStyle = "rgba(0, 150, 255, 0.1)";
+            sCtx.fillRect(160, simChamberY, 120, 80);
+            sCtx.strokeStyle = "#00e5ff";
+            sCtx.lineWidth = 2;
+            sCtx.strokeRect(160, simChamberY, 120, 80);
+            
+            // Moving gas particles
+            for(let i=0; i<15; i++) {
+                sCtx.beginPath();
+                let px = 160 + ((i*43 + particleOffset) % 120);
+                let py = simChamberY + ((i*27 + particleOffset*0.5) % 80);
+                sCtx.arc(px, py, 1.5, 0, Math.PI*2);
+                sCtx.fillStyle = "rgba(0, 229, 255, 0.8)";
+                sCtx.fill();
+            }
+            sCtx.fillStyle = "#00e5ff";
+            sCtx.fillText("હાઇડ્રોજન વાયુ", 175, simChamberY - 10);
+            
+            // 4. Spectrum Gradient (જા-ની-વા-લી-પી-ના-રા)
+            let bGrad = sCtx.createLinearGradient(0, 80, 0, 420);
+            bGrad.addColorStop(0.0, "#ff0000"); // રાતો (ઉપર)
+            bGrad.addColorStop(0.16, "#ff7f00"); 
+            bGrad.addColorStop(0.33, "#ffff00"); 
+            bGrad.addColorStop(0.50, "#00ff00"); 
+            bGrad.addColorStop(0.66, "#00bfff"); 
+            bGrad.addColorStop(0.83, "#4b0082"); 
+            bGrad.addColorStop(1.0, "#8a2be2"); // જાંબલી (નીચે)
+            
+            // Dispersed rays
+            sCtx.beginPath();
+            sCtx.moveTo(430, 230);
+            sCtx.lineTo(720, 80);
+            sCtx.lineTo(720, 420);
+            sCtx.closePath();
+            sCtx.fillStyle = bGrad;
+            sCtx.globalAlpha = 0.65;
+            sCtx.fill();
+            sCtx.globalAlpha = 1.0;
+            
+            // 5. Screen (પડદો)
+            sCtx.fillStyle = "#111";
+            sCtx.fillRect(715, 60, 60, 380);
+            sCtx.fillStyle = bGrad;
+            sCtx.fillRect(720, 80, 50, 340);
+            
+            sCtx.fillStyle = "#cccccc";
+            sCtx.fillText("રાતો", 780, 90);
+            sCtx.fillText("જાંબલી", 780, 415);
+            
+            // 6. Stark Black Absorption Lines (કાળી રેખાઓ)
+            if (Math.abs(simChamberY - 190) < 5) {
+                sCtx.fillStyle = "#000000"; // સંપૂર્ણ કાળો રંગ
+                
+                // H-alpha (રાતો)
+                sCtx.fillRect(720, 120, 50, 5);
+                drawSimLabel("H-α (656nm)", 120);
+                
+                // H-beta (વાદળી-લીલો)
+                sCtx.fillRect(720, 270, 50, 5);
+                drawSimLabel("H-β (486nm)", 270);
+                
+                // H-gamma (જાંબલી-વાદળી)
+                sCtx.fillRect(720, 330, 50, 5);
+                drawSimLabel("H-γ (434nm)", 330);
+                
+                // H-delta (જાંબલી)
+                sCtx.fillRect(720, 370, 50, 5);
+                drawSimLabel("H-δ (410nm)", 370);
+            }
+            
+            requestAnimationFrame(renderSimulation);
+        }
+        
+        function drawSimLabel(text, yPos) {
+            sCtx.fillStyle = "#ffffff";
+            sCtx.font = "12px Arial";
+            sCtx.fillText(text, 775, yPos + 6);
+            
+            sCtx.beginPath();
+            sCtx.moveTo(720, yPos+2.5);
+            sCtx.lineTo(770, yPos+2.5);
+            sCtx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+            sCtx.lineWidth = 1;
+            sCtx.stroke();
+        }
+        
+        renderSimulation();
+    </script>
+</div>
+<!-- શોષણ વર્ણપટ સિમ્યુલેશન અહી પૂરું થાય છે -->
