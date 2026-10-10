@@ -20,11 +20,16 @@
         .compression-ghost { left: 250px; height: 60px; width: 0px; background: repeating-linear-gradient(-45deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.2) 5px, rgba(255, 255, 255, 0.2) 5px, rgba(255, 255, 255, 0.2) 10px); border: 2px dashed #e74c3c; box-sizing: border-box; border-radius: 0 4px 4px 0; z-index: 6; display: none; }
         .marker-l0 { position: absolute; left: 250px; top: 10%; height: 80%; border-left: 2px dashed #e74c3c; z-index: 2; }
         
-        /* Dimension Lines */
-        .dim-line { position: absolute; bottom: 25px; height: 10px; border-left: 2px solid; border-right: 2px solid; border-bottom: 2px solid; z-index: 15; text-align: center; font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 1.1em; font-weight: bold; }
-        .dim-text { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.9); padding: 0 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        #dim-L { left: 0; width: 250px; border-color: #475569; color: #475569; }
-        #dim-dL { border-color: #e74c3c; color: #e74c3c; display: none; }
+        /* Dimension Lines (Separated Top and Bottom) */
+        .dim-line { position: absolute; height: 15px; border-left: 2px solid; border-right: 2px solid; z-index: 15; text-align: center; font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 1.1em; font-weight: bold; }
+        
+        /* L (Top Line) */
+        #dim-L { top: 40px; left: 0; width: 250px; border-top: 2px solid #475569; border-color: #475569; color: #475569; }
+        #dim-L .dim-text { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.9); padding: 0 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        
+        /* ΔL (Bottom Line) */
+        #dim-dL { bottom: 40px; border-bottom: 2px solid #e74c3c; border-color: #e74c3c; color: #e74c3c; display: none; }
+        #dim-dL .dim-text { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.9); padding: 0 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
         /* Controls */
         .controls { margin: 25px 0; padding: 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; }
@@ -40,7 +45,7 @@
         .scale-markers { position: relative; height: 20px; font-size: 0.85em; color: #64748b; margin-top: 5px; }
         .scale-markers span { position: absolute; }
         .marker-min { left: 0; }
-        .marker-zero { left: 40%; transform: translateX(-50%); font-weight: bold; } /* 0 બરાબર 40% પોઝિશન પર સેટ કર્યું */
+        .marker-zero { left: 40%; transform: translateX(-50%); font-weight: bold; }
         .marker-max { right: 0; }
 
         /* Data Cards */
@@ -54,13 +59,9 @@
         /* Math Panel Fixes */
         .calculation-panel { margin-top: 25px; background: #fffbeb; border: 2px solid #fcd34d; border-radius: 10px; padding: 20px; }
         .panel-title { text-align: center; font-weight: bold; color: #b45309; font-size: 1.2em; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        
-        /* minmax 280px કર્યું છે જેથી લેન્ડસ્કેપમાં બોક્સ દબાઈ ન જાય */
         .math-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .math-box { background: white; padding: 15px 10px; border-radius: 8px; border: 1px solid #fde68a; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; }
         .math-box-title { font-size: 1em; color: #92400e; font-weight: bold; margin-bottom: 15px; text-align: center; font-family: 'Segoe UI', sans-serif; }
-        
-        /* સૂત્રમાં flex-wrap ઉમેર્યું અને ફોન્ટ સાઈઝ 1.1em કરી */
         .formula-row { display: flex; align-items: center; justify-content: center; font-size: 1.1em; font-family: 'Cambria Math', 'Times New Roman', serif; color: #1e293b; gap: 6px; width: 100%; flex-wrap: wrap; }
         .fraction { display: flex; flex-direction: column; align-items: center; margin: 0 3px; }
         .numerator { border-bottom: 2px solid #1e293b; padding: 0 5px; text-align: center; width: 100%; }
@@ -78,6 +79,7 @@
         <div class="cylinder-wrapper">
             <div class="marker-l0"></div>
             
+            <!-- માર્કિંગ L (Top) અને ΔL (Bottom) -->
             <div class="dim-line" id="dim-L"><div class="dim-text">L</div></div>
             <div class="dim-line" id="dim-dL"><div class="dim-text" id="dim-dL-text">ΔL</div></div>
 
@@ -94,7 +96,6 @@
         </div>
         <input type="range" id="force-slider" min="-100" max="150" value="0">
         
-        <!-- સુધારેલું સ્કેલ માર્કિંગ -->
         <div class="scale-markers">
             <span class="marker-min">-10.0 cm</span>
             <span class="marker-zero">0 cm</span>
