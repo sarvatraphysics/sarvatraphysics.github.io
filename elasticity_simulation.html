@@ -20,20 +20,30 @@
         .compression-ghost { left: 250px; height: 60px; width: 0px; background: repeating-linear-gradient(-45deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.2) 5px, rgba(255, 255, 255, 0.2) 5px, rgba(255, 255, 255, 0.2) 10px); border: 2px dashed #e74c3c; box-sizing: border-box; border-radius: 0 4px 4px 0; z-index: 6; display: none; }
         .marker-l0 { position: absolute; left: 250px; top: 10%; height: 80%; border-left: 2px dashed #e74c3c; z-index: 2; }
         
-        /* Dimension Lines (L and ΔL) */
+        /* Dimension Lines */
         .dim-line { position: absolute; bottom: 25px; height: 10px; border-left: 2px solid; border-right: 2px solid; border-bottom: 2px solid; z-index: 15; text-align: center; font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 1.1em; font-weight: bold; }
         .dim-text { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.9); padding: 0 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         #dim-L { left: 0; width: 250px; border-color: #475569; color: #475569; }
         #dim-dL { border-color: #e74c3c; color: #e74c3c; display: none; }
 
-        /* Controls & Data */
+        /* Controls */
         .controls { margin: 25px 0; padding: 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; }
         .slider-labels { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; }
         .btn-compress { color: #c0392b; background: #fadbd8; padding: 5px 15px; border-radius: 20px;}
         .btn-stretch { color: #27ae60; background: #d5f5e3; padding: 5px 15px; border-radius: 20px;}
-        input[type="range"] { width: 100%; cursor: pointer; height: 8px; background: #cbd5e1; border-radius: 5px; outline: none; -webkit-appearance: none; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: #2980b9; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .scale-markers { display: flex; justify-content: space-between; font-size: 0.85em; color: #64748b; margin-top: 5px; }
+        
+        /* Slider Input */
+        input[type="range"] { width: 100%; cursor: pointer; height: 8px; background: #cbd5e1; border-radius: 5px; outline: none; -webkit-appearance: none; margin-bottom: 5px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: #2980b9; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); position: relative; z-index: 2; }
+        
+        /* Fixed Scale Markers */
+        .scale-markers { position: relative; height: 20px; font-size: 0.85em; color: #64748b; margin-top: 5px; }
+        .scale-markers span { position: absolute; }
+        .marker-min { left: 0; }
+        .marker-zero { left: 40%; transform: translateX(-50%); font-weight: bold; } /* 0 બરાબર 40% પોઝિશન પર સેટ કર્યું */
+        .marker-max { right: 0; }
+
+        /* Data Cards */
         .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-top: 20px; }
         .data-card { background: #fff; padding: 15px 10px; border-radius: 8px; border: 2px solid #e2e8f0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: center; }
         .data-title { font-size: 0.85em; color: #475569; font-weight: 600; margin-bottom: 8px; }
@@ -41,17 +51,21 @@
         .unit { font-size: 0.6em; color: #94a3b8; }
         .status-card { color: white; transition: background 0.3s; display: flex; flex-direction: column; justify-content: center; }
         
-        /* Math Panel */
+        /* Math Panel Fixes */
         .calculation-panel { margin-top: 25px; background: #fffbeb; border: 2px solid #fcd34d; border-radius: 10px; padding: 20px; }
         .panel-title { text-align: center; font-weight: bold; color: #b45309; font-size: 1.2em; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .math-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-        .math-box { background: white; padding: 15px; border-radius: 8px; border: 1px solid #fde68a; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; }
-        .math-box-title { font-size: 1em; color: #92400e; font-weight: bold; margin-bottom: 10px; text-align: center; font-family: 'Segoe UI', sans-serif; }
-        .formula-row { display: flex; align-items: center; justify-content: center; font-size: 1.25em; font-family: 'Cambria Math', 'Times New Roman', serif; color: #1e293b; gap: 8px; width: 100%; }
-        .fraction { display: flex; flex-direction: column; align-items: center; margin: 0 5px; }
+        
+        /* minmax 280px કર્યું છે જેથી લેન્ડસ્કેપમાં બોક્સ દબાઈ ન જાય */
+        .math-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .math-box { background: white; padding: 15px 10px; border-radius: 8px; border: 1px solid #fde68a; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; }
+        .math-box-title { font-size: 1em; color: #92400e; font-weight: bold; margin-bottom: 15px; text-align: center; font-family: 'Segoe UI', sans-serif; }
+        
+        /* સૂત્રમાં flex-wrap ઉમેર્યું અને ફોન્ટ સાઈઝ 1.1em કરી */
+        .formula-row { display: flex; align-items: center; justify-content: center; font-size: 1.1em; font-family: 'Cambria Math', 'Times New Roman', serif; color: #1e293b; gap: 6px; width: 100%; flex-wrap: wrap; }
+        .fraction { display: flex; flex-direction: column; align-items: center; margin: 0 3px; }
         .numerator { border-bottom: 2px solid #1e293b; padding: 0 5px; text-align: center; width: 100%; }
         .denominator { padding: 0 5px; text-align: center; width: 100%; }
-        .result-val { font-weight: bold; padding: 2px 8px; border-radius: 4px; }
+        .result-val { font-weight: bold; padding: 2px 6px; border-radius: 4px; }
         .note { text-align: center; font-size: 0.85em; color: #d97706; margin-top: 15px; font-style: italic; }
     </style>
 </head>
@@ -62,14 +76,11 @@
     <div class="lab-area">
         <div class="wall"></div>
         <div class="cylinder-wrapper">
-            <!-- મૂળ લંબાઈ દર્શાવતી લાઈન -->
             <div class="marker-l0"></div>
             
-            <!-- ગ્રાફિક્સ પરના માર્કિંગ (L અને ΔL) -->
             <div class="dim-line" id="dim-L"><div class="dim-text">L</div></div>
             <div class="dim-line" id="dim-dL"><div class="dim-text" id="dim-dL-text">ΔL</div></div>
 
-            <!-- નળાકારના ભાગો -->
             <div class="cylinder-main" id="cyl-main"></div>
             <div class="compression-ghost" id="cyl-ghost"></div>
             <div class="cylinder-extension" id="cyl-ext"></div>
@@ -82,10 +93,12 @@
             <span class="btn-stretch">ખેંચો (Stretch) →</span>
         </div>
         <input type="range" id="force-slider" min="-100" max="150" value="0">
+        
+        <!-- સુધારેલું સ્કેલ માર્કિંગ -->
         <div class="scale-markers">
-            <span>-10.0 cm</span>
-            <span>0 cm</span>
-            <span>+15.0 cm</span>
+            <span class="marker-min">-10.0 cm</span>
+            <span class="marker-zero">0 cm</span>
+            <span class="marker-max">+15.0 cm</span>
         </div>
     </div>
 
@@ -134,8 +147,11 @@
             <div class="math-box">
                 <div class="math-box-title">1. સંગત વિકૃતિ (&epsilon;<sub>l</sub>)</div>
                 <div class="formula-row">
-                    &epsilon;<sub>l</sub> = <div class="fraction"><div class="numerator">ΔL</div><div class="denominator">L</div></div> =
-                    <div class="fraction"><div class="numerator" id="math-dl" style="color: #64748b;">0.0</div><div class="denominator">25.0</div></div> = 
+                    <span>&epsilon;<sub>l</sub> =</span>
+                    <div class="fraction"><div class="numerator">ΔL</div><div class="denominator">L</div></div> 
+                    <span>=</span>
+                    <div class="fraction"><div class="numerator" id="math-dl" style="color: #64748b;">0.0</div><div class="denominator">25.0</div></div> 
+                    <span>=</span> 
                     <span class="result-val" id="math-strain-l" style="color: #64748b;">0.000</span>
                 </div>
             </div>
@@ -143,8 +159,11 @@
             <div class="math-box">
                 <div class="math-box-title">2. પાર્શ્વિક વિકૃતિ (&epsilon;<sub>t</sub>)</div>
                 <div class="formula-row">
-                    &epsilon;<sub>t</sub> = <div class="fraction"><div class="numerator">ΔH</div><div class="denominator">H</div></div> =
-                    <div class="fraction"><div class="numerator" id="math-dh" style="color: #64748b;">0.00</div><div class="denominator">6.00</div></div> = 
+                    <span>&epsilon;<sub>t</sub> =</span>
+                    <div class="fraction"><div class="numerator">ΔH</div><div class="denominator">H</div></div> 
+                    <span>=</span>
+                    <div class="fraction"><div class="numerator" id="math-dh" style="color: #64748b;">0.00</div><div class="denominator">6.00</div></div> 
+                    <span>=</span> 
                     <span class="result-val" id="math-strain-t" style="color: #64748b;">0.000</span>
                 </div>
             </div>
@@ -152,7 +171,9 @@
             <div class="math-box">
                 <div class="math-box-title" style="color: #047857;">3. પોઈસન ગુણોત્તર (&nu;)</div>
                 <div class="formula-row">
-                    &nu; = <div class="fraction"><div class="numerator">| &epsilon;<sub>t</sub> |</div><div class="denominator">| &epsilon;<sub>l</sub> |</div></div> = 
+                    <span>&nu; =</span> 
+                    <div class="fraction"><div class="numerator">| &epsilon;<sub>t</sub> |</div><div class="denominator">| &epsilon;<sub>l</sub> |</div></div> 
+                    <span>=</span> 
                     <span class="result-val" id="math-poisson" style="color: #047857;">-</span>
                 </div>
             </div>
@@ -203,48 +224,40 @@
         let newThick_cm = H_cm + deltaH_cm;
         let newThick_px = newThick_cm * pxPerCm;
 
-        // ગ્રાફિક્સ અપડેટ
         let mainWidth = deltaL_px < 0 ? (L_px + deltaL_px) : L_px;
         cylMain.style.width = mainWidth + 'px';
         cylMain.style.height = newThick_px + 'px';
         cylMain.style.borderRadius = deltaL_px < 0 ? '0 4px 4px 0' : '0';
 
         if (deltaL_px > 0) { 
-            // ખેંચાણ
             cylExt.style.width = deltaL_px + 'px';
             cylExt.style.height = newThick_px + 'px';
             cylGhost.style.display = 'none';
             
-            // ΔL માર્કિંગ બતાવો
             dimDL.style.display = 'block';
             dimDL.style.left = L_px + 'px';
             dimDL.style.width = deltaL_px + 'px';
             dimDL.style.borderColor = '#16a085';
             dimDLText.style.color = '#16a085';
         } else if (deltaL_px < 0) { 
-            // દબાણ
             cylExt.style.width = '0px';
             
-            // ઘોસ્ટ સિલિન્ડર બિલકુલ વચ્ચે સેટ કરો
             cylGhost.style.display = 'block';
             cylGhost.style.left = mainWidth + 'px';
             cylGhost.style.width = Math.abs(deltaL_px) + 'px';
             cylGhost.style.height = newThick_px + 'px';
             
-            // ΔL માર્કિંગ બતાવો
             dimDL.style.display = 'block';
             dimDL.style.left = mainWidth + 'px';
             dimDL.style.width = Math.abs(deltaL_px) + 'px';
             dimDL.style.borderColor = '#c0392b';
             dimDLText.style.color = '#c0392b';
         } else { 
-            // સામાન્ય સ્થિતિ
             cylExt.style.width = '0px';
             cylGhost.style.display = 'none';
             dimDL.style.display = 'none';
         }
 
-        // ડેટા કાર્ડ અપડેટ
         valNewLength.innerText = newLength_cm.toFixed(1) + ' cm';
         valNewThick.innerText = newThick_cm.toFixed(2) + ' cm';
 
