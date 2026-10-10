@@ -56,6 +56,30 @@
   border-radius: 0;
   background: #020617;
 }
+
+/* Beautiful Frame for Open Simulation Button */
+.topic-sim {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  margin-left: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.9em;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+.topic-sim:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
 </style>
 </head>
 <body>
@@ -146,7 +170,7 @@ function topic(name,url,standard,chapterNo,chapterTitle) {
   let sim = '';
   if (url) {
     if (url.endsWith('.html')) {
-      sim = `<button class="topic-sim" onclick="openSim('${url}', '${name}')" style="cursor:pointer; background:none; border:none; color:inherit; font:inherit; text-decoration:underline;">Open simulation ↗</button>`;
+      sim = `<button class="topic-sim" onclick="openSim('${url}', '${name}')">Open simulation ↗</button>`;
     } else {
       sim = `<a class="topic-sim" href="${url}" target="_blank" rel="noopener">Open simulation ↗</a>`;
     }
