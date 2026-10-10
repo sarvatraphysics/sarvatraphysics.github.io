@@ -7,13 +7,26 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; }
         .simulation-box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 100%; max-width: 800px; }
-        .lab-area { position: relative; background-color: #fff; background-image: linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px); background-size: 20px 20px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 40px 20px; overflow-x: auto; display: flex; align-items: center; min-height: 150px; }
-        .wall { width: 30px; height: 140px; background: repeating-linear-gradient(45deg, #2c3e50, #2c3e50 10px, #34495e 10px, #34495e 20px); border-right: 4px solid #1a252f; border-radius: 4px 0 0 4px; position: absolute; left: 20px; z-index: 10; box-shadow: 2px 0 5px rgba(0,0,0,0.3); }
-        .cylinder-wrapper { position: absolute; left: 54px; display: flex; align-items: center; height: 140px; }
-        .cylinder-main { height: 60px; width: 250px; background: linear-gradient(to bottom, #95a5a6 0%, #ecf0f1 40%, #7f8c8d 100%); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), inset 0 -3px 5px rgba(0,0,0,0.2); transition: all 0.1s ease-out; border-radius: 0 4px 4px 0; position: relative; z-index: 5; }
-        .cylinder-extension { height: 60px; width: 0px; background: linear-gradient(to bottom, #2ecc71 0%, #a8e6cf 40%, #27ae60 100%); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), inset 0 -3px 5px rgba(0,0,0,0.2); transition: all 0.1s ease-out; border-radius: 0 8px 8px 0; z-index: 4; }
-        .compression-ghost { height: 60px; width: 0px; background: repeating-linear-gradient(-45deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.2) 5px, rgba(255, 255, 255, 0.2) 5px, rgba(255, 255, 255, 0.2) 10px); border: 2px dashed #e74c3c; box-sizing: border-box; position: absolute; right: 0; transition: all 0.1s ease-out; border-radius: 0 4px 4px 0; z-index: 6; display: none; }
-        .marker-l0 { position: absolute; left: 250px; top: -20px; height: 180px; border-left: 2px dashed #e74c3c; z-index: 2; }
+        
+        /* Lab Area & Positioning */
+        .lab-area { position: relative; background-color: #fff; background-image: linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px); background-size: 20px 20px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; height: 220px; display: flex; align-items: center; }
+        .wall { width: 30px; height: 160px; background: repeating-linear-gradient(45deg, #2c3e50, #2c3e50 10px, #34495e 10px, #34495e 20px); border-right: 4px solid #1a252f; border-radius: 4px 0 0 4px; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); z-index: 10; box-shadow: 2px 0 5px rgba(0,0,0,0.3); }
+        .cylinder-wrapper { position: absolute; left: 54px; top: 0; bottom: 0; right: 20px; overflow: visible; }
+        
+        /* Cylinders */
+        .cylinder-main, .cylinder-extension, .compression-ghost { position: absolute; top: 50%; transform: translateY(-50%); transition: all 0.1s ease-out; }
+        .cylinder-main { left: 0; height: 60px; width: 250px; background: linear-gradient(to bottom, #95a5a6 0%, #ecf0f1 40%, #7f8c8d 100%); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), inset 0 -3px 5px rgba(0,0,0,0.2); border-radius: 0 4px 4px 0; z-index: 5; }
+        .cylinder-extension { left: 250px; height: 60px; width: 0px; background: linear-gradient(to bottom, #2ecc71 0%, #a8e6cf 40%, #27ae60 100%); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), inset 0 -3px 5px rgba(0,0,0,0.2); border-radius: 0 8px 8px 0; z-index: 4; }
+        .compression-ghost { left: 250px; height: 60px; width: 0px; background: repeating-linear-gradient(-45deg, rgba(231, 76, 60, 0.2), rgba(231, 76, 60, 0.2) 5px, rgba(255, 255, 255, 0.2) 5px, rgba(255, 255, 255, 0.2) 10px); border: 2px dashed #e74c3c; box-sizing: border-box; border-radius: 0 4px 4px 0; z-index: 6; display: none; }
+        .marker-l0 { position: absolute; left: 250px; top: 10%; height: 80%; border-left: 2px dashed #e74c3c; z-index: 2; }
+        
+        /* Dimension Lines (L and ΔL) */
+        .dim-line { position: absolute; bottom: 25px; height: 10px; border-left: 2px solid; border-right: 2px solid; border-bottom: 2px solid; z-index: 15; text-align: center; font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 1.1em; font-weight: bold; }
+        .dim-text { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.9); padding: 0 6px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        #dim-L { left: 0; width: 250px; border-color: #475569; color: #475569; }
+        #dim-dL { border-color: #e74c3c; color: #e74c3c; display: none; }
+
+        /* Controls & Data */
         .controls { margin: 25px 0; padding: 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; }
         .slider-labels { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; }
         .btn-compress { color: #c0392b; background: #fadbd8; padding: 5px 15px; border-radius: 20px;}
@@ -27,12 +40,14 @@
         .data-value { font-size: 1.4em; font-weight: bold; }
         .unit { font-size: 0.6em; color: #94a3b8; }
         .status-card { color: white; transition: background 0.3s; display: flex; flex-direction: column; justify-content: center; }
+        
+        /* Math Panel */
         .calculation-panel { margin-top: 25px; background: #fffbeb; border: 2px solid #fcd34d; border-radius: 10px; padding: 20px; }
         .panel-title { text-align: center; font-weight: bold; color: #b45309; font-size: 1.2em; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .math-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
         .math-box { background: white; padding: 15px; border-radius: 8px; border: 1px solid #fde68a; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; }
-        .math-box-title { font-size: 0.9em; color: #92400e; font-weight: bold; margin-bottom: 10px; text-align: center; }
-        .formula-row { display: flex; align-items: center; justify-content: center; font-size: 1.2em; font-family: 'Cambria Math', 'Times New Roman', serif; color: #1e293b; gap: 10px; width: 100%; }
+        .math-box-title { font-size: 1em; color: #92400e; font-weight: bold; margin-bottom: 10px; text-align: center; font-family: 'Segoe UI', sans-serif; }
+        .formula-row { display: flex; align-items: center; justify-content: center; font-size: 1.25em; font-family: 'Cambria Math', 'Times New Roman', serif; color: #1e293b; gap: 8px; width: 100%; }
         .fraction { display: flex; flex-direction: column; align-items: center; margin: 0 5px; }
         .numerator { border-bottom: 2px solid #1e293b; padding: 0 5px; text-align: center; width: 100%; }
         .denominator { padding: 0 5px; text-align: center; width: 100%; }
@@ -47,10 +62,16 @@
     <div class="lab-area">
         <div class="wall"></div>
         <div class="cylinder-wrapper">
+            <!-- મૂળ લંબાઈ દર્શાવતી લાઈન -->
             <div class="marker-l0"></div>
-            <div class="cylinder-main" id="cyl-main">
-                <div class="compression-ghost" id="cyl-ghost"></div>
-            </div>
+            
+            <!-- ગ્રાફિક્સ પરના માર્કિંગ (L અને ΔL) -->
+            <div class="dim-line" id="dim-L"><div class="dim-text">L</div></div>
+            <div class="dim-line" id="dim-dL"><div class="dim-text" id="dim-dL-text">ΔL</div></div>
+
+            <!-- નળાકારના ભાગો -->
+            <div class="cylinder-main" id="cyl-main"></div>
+            <div class="compression-ghost" id="cyl-ghost"></div>
             <div class="cylinder-extension" id="cyl-ext"></div>
         </div>
     </div>
@@ -91,7 +112,7 @@
         <div class="data-card" style="border-color: #8b5cf6;">
             <div class="data-title" style="color: #6d28d9;">નવી જાડાઈ (H')</div>
             <div class="data-value" id="val-new-thick" style="color: #4c1d95;">6.00 <span class="unit">cm</span></div>
-            <div class="unit" style="margin-top: 4px;">પોઈસન ગુણોત્તર ν=0.40</div>
+            <div class="unit" style="margin-top: 4px;">પોઈસન ગુણોત્તર &nu;=0.40</div>
         </div>
         <div class="data-card" id="card-delta-h" style="border-color: #cbd5e1;">
             <div class="data-title">જાડાઈમાં ફેરફાર (ΔH)</div>
@@ -111,32 +132,31 @@
         
         <div class="math-grid">
             <div class="math-box">
-                <div class="math-box-title">1. સંગત વિકૃતિ (ε_l)</div>
+                <div class="math-box-title">1. સંગત વિકૃતિ (&epsilon;<sub>l</sub>)</div>
                 <div class="formula-row">
-                    ε_l = <div class="fraction"><div class="numerator">ΔL</div><div class="denominator">L</div></div> =
+                    &epsilon;<sub>l</sub> = <div class="fraction"><div class="numerator">ΔL</div><div class="denominator">L</div></div> =
                     <div class="fraction"><div class="numerator" id="math-dl" style="color: #64748b;">0.0</div><div class="denominator">25.0</div></div> = 
                     <span class="result-val" id="math-strain-l" style="color: #64748b;">0.000</span>
                 </div>
             </div>
 
             <div class="math-box">
-                <div class="math-box-title">2. પાર્શ્વિક વિકૃતિ (ε_t)</div>
+                <div class="math-box-title">2. પાર્શ્વિક વિકૃતિ (&epsilon;<sub>t</sub>)</div>
                 <div class="formula-row">
-                    ε_t = <div class="fraction"><div class="numerator">ΔH</div><div class="denominator">H</div></div> =
+                    &epsilon;<sub>t</sub> = <div class="fraction"><div class="numerator">ΔH</div><div class="denominator">H</div></div> =
                     <div class="fraction"><div class="numerator" id="math-dh" style="color: #64748b;">0.00</div><div class="denominator">6.00</div></div> = 
                     <span class="result-val" id="math-strain-t" style="color: #64748b;">0.000</span>
                 </div>
             </div>
 
             <div class="math-box">
-                <div class="math-box-title" style="color: #047857;">3. પોઈસન ગુણોત્તર (ν)</div>
+                <div class="math-box-title" style="color: #047857;">3. પોઈસન ગુણોત્તર (&nu;)</div>
                 <div class="formula-row">
-                    ν = <div class="fraction"><div class="numerator">| ε_t |</div><div class="denominator">| ε_l |</div></div> = 
+                    &nu; = <div class="fraction"><div class="numerator">| &epsilon;<sub>t</sub> |</div><div class="denominator">| &epsilon;<sub>l</sub> |</div></div> = 
                     <span class="result-val" id="math-poisson" style="color: #047857;">-</span>
                 </div>
             </div>
         </div>
-
         <div class="note">* નોંધ: વિકૃતિ સમાન ભૌતિક રાશિઓનો ગુણોત્તર હોવાથી તેને કોઈ એકમ નથી.</div>
     </div>
 </div>
@@ -146,6 +166,8 @@
     const cylMain = document.getElementById('cyl-main');
     const cylExt = document.getElementById('cyl-ext');
     const cylGhost = document.getElementById('cyl-ghost');
+    const dimDL = document.getElementById('dim-dL');
+    const dimDLText = document.getElementById('dim-dL-text');
     
     const valNewLength = document.getElementById('val-new-length');
     const valDelta = document.getElementById('val-delta');
@@ -181,33 +203,48 @@
         let newThick_cm = H_cm + deltaH_cm;
         let newThick_px = newThick_cm * pxPerCm;
 
+        // ગ્રાફિક્સ અપડેટ
+        let mainWidth = deltaL_px < 0 ? (L_px + deltaL_px) : L_px;
+        cylMain.style.width = mainWidth + 'px';
         cylMain.style.height = newThick_px + 'px';
-        cylExt.style.height = newThick_px + 'px';
-        
+        cylMain.style.borderRadius = deltaL_px < 0 ? '0 4px 4px 0' : '0';
+
         if (deltaL_px > 0) { 
-            cylMain.style.width = L_px + 'px';
-            cylMain.style.borderRadius = '0';
+            // ખેંચાણ
             cylExt.style.width = deltaL_px + 'px';
-            cylExt.style.left = L_px + 'px';
+            cylExt.style.height = newThick_px + 'px';
             cylGhost.style.display = 'none';
+            
+            // ΔL માર્કિંગ બતાવો
+            dimDL.style.display = 'block';
+            dimDL.style.left = L_px + 'px';
+            dimDL.style.width = deltaL_px + 'px';
+            dimDL.style.borderColor = '#16a085';
+            dimDLText.style.color = '#16a085';
         } else if (deltaL_px < 0) { 
-            cylMain.style.width = (L_px + deltaL_px) + 'px';
-            cylMain.style.borderRadius = '0 4px 4px 0';
+            // દબાણ
             cylExt.style.width = '0px';
+            
+            // ઘોસ્ટ સિલિન્ડર બિલકુલ વચ્ચે સેટ કરો
             cylGhost.style.display = 'block';
+            cylGhost.style.left = mainWidth + 'px';
             cylGhost.style.width = Math.abs(deltaL_px) + 'px';
             cylGhost.style.height = newThick_px + 'px';
+            
+            // ΔL માર્કિંગ બતાવો
+            dimDL.style.display = 'block';
+            dimDL.style.left = mainWidth + 'px';
+            dimDL.style.width = Math.abs(deltaL_px) + 'px';
+            dimDL.style.borderColor = '#c0392b';
+            dimDLText.style.color = '#c0392b';
         } else { 
-            cylMain.style.width = L_px + 'px';
-            cylMain.style.borderRadius = '0 4px 4px 0';
+            // સામાન્ય સ્થિતિ
             cylExt.style.width = '0px';
             cylGhost.style.display = 'none';
+            dimDL.style.display = 'none';
         }
 
-        let marginTop = (H_px - newThick_px) / 2;
-        cylMain.style.marginTop = marginTop + 'px';
-        cylExt.style.marginTop = marginTop + 'px';
-
+        // ડેટા કાર્ડ અપડેટ
         valNewLength.innerText = newLength_cm.toFixed(1) + ' cm';
         valNewThick.innerText = newThick_cm.toFixed(2) + ' cm';
 
